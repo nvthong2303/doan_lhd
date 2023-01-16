@@ -25,6 +25,7 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(Middleware).forRoutes(
       { path: `/api/v1/lesson/listAuth`, method: RequestMethod.GET },
+      { path: `/api/v1/users/info`, method: RequestMethod.GET },
       // { path: `/user/login`, method: RequestMethod.POST },
     );
   }

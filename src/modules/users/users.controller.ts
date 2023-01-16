@@ -31,9 +31,18 @@ export class UsersController {
   // desc       login user
   // return     token
   // token      required false
-  @Post(`/login`)
+  @Post(`login`)
   login(@Req() req, @Res() res) {
     return this.usersService.login(req, res);
+  }
+
+  // route      POST /api/v1/users/info
+  // desc       get info user
+  // return     info user
+  // token      required true
+  @Get(`info`)
+  getInfo(@Req() req, @Res() res) {
+    return this.usersService.getInfo(req, res);
   }
 
   @Get()

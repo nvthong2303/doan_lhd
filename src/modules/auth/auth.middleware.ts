@@ -14,7 +14,7 @@ export class Middleware implements NestMiddleware {
         const token = req.headers.authorization.replace('Bearer ', '');
 
         const user = jwt.verify(token, KEY);
-        console.log(user)
+        console.log('mdware ==>', user)
 
         if (user) {
           req.body.user = {

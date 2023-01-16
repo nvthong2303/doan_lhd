@@ -78,6 +78,39 @@ export class UsersService {
     }
   }
 
+  async getInfo(req, res) {
+    try {
+      if (req.body.user.email) {
+        const user = await this.userModel.findOne({ email: req.body.user.email })
+
+        if (user) {
+          user.password = '';
+          return res.status(200).json({
+            code: 200,
+            user,
+            message: 'Login success'
+          })
+        } else {
+          return res.status(401).json({
+            code: 401,
+            message: 'Not found',
+          })
+        }
+      } else {
+        return res.status(400).json({
+          code: 400,
+          message: 'Bad request'
+        });
+      }
+    } catch (error) {
+      Logger.log('error login', error);
+      return res.status(400).json({
+        code: 400,
+        message: 'Bad request'
+      });
+    }
+  }
+
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
