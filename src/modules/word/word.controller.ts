@@ -30,7 +30,7 @@ let _fileName = '';
 export class WordController {
   constructor(private readonly WordService: WordService) { }
 
-  @Get('search')
+  @Post('search')
   searchWord(@Req() req, @Res() res) {
     return this.WordService.search(req, res);
   }
@@ -55,6 +55,15 @@ export class WordController {
   }))
   create(@UploadedFile() file: Express.Multer.File, req, res) {
     return this.WordService.createWord(file, req, res, _fileName);
+  }
+
+  // route      POST /api/v1/word/detail/:id
+  // desc       chi tiết từ theo id
+  // return     list lesson + result of exercise
+  // token      required false
+  @Get('detail/:word')
+  getDetailLesson(@Req() req, @Res() res, @Param('word') wordId) {
+    return this.WordService.getDetailWord(req, res, wordId);
   }
 
   // route      GET /api/v1/word/file

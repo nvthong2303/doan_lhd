@@ -29,8 +29,8 @@ export class UsersService {
 
         const token = jwt.sign({ email: req.body.email }, KEY)
 
-        return res.status(201).json({
-          code: 201,
+        return res.status(200).json({
+          code: 200,
           token,
           message: 'Register success',
         });
@@ -88,7 +88,7 @@ export class UsersService {
           return res.status(200).json({
             code: 200,
             user,
-            message: 'Login success'
+            message: 'Get info user success'
           })
         } else {
           return res.status(401).json({

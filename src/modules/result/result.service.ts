@@ -1,13 +1,84 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateResultDto } from './dto/create-result.dto';
 import { UpdateResultDto } from './dto/update-result.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ResultExercise } from './resultExercise.model';
+import { ResultLesson } from './resultLesson.model';
 
 @Injectable()
 export class ResultService {
+  constructor(
+    @InjectModel('ResultExercise') private resultExerciseModel: Model<ResultExercise>,
+    @InjectModel('ResultLesson') private resultLessonModel: Model<ResultLesson>,
+  ) { }
 
   async saveResult(req, res) {
-    return 'okela';
+    try {
+      const resultExercise = await this.resultExerciseModel.findOneAndUpdate({
+        lessonId: req.body.lessonId,
+        word: req.body.word,
+        user: req.body.user.email
+      }, {
+        lessonId: req.body.lessonId,
+        word: req.body.word,
+        user: req.body.user.email,
+        '$push': {
+          "result": {
+            point: req.body.result,
+            createAt: Date.now()
+          }
+        }
+      }, {
+        upsert: true
+      })
+
+      const resultLesson = await this.resultLessonModel.findOne({
+        lessonId: req.body.lessonId,
+        user: req.body.user.email
+      })
+
+
+      if (resultLesson) {
+        if (resultLesson.listExerciseDone.includes(req.body.word)) {
+          return res.status(200).json({
+            code: 200,
+            message: 'Save result'
+          })
+        } else {
+          await this.resultLessonModel.findOneAndUpdate({
+            lessonId: req.body.lessonId,
+            user: req.body.user.email
+          }, {
+            '$push': {
+              'listExerciseDone': req.body.word
+            }
+          })
+        }
+      } else {
+        const newResultLesson = new this.resultLessonModel({
+          lessonId: req.body.lessonId,
+          user: req.body.user.email,
+          listExerciseDone: [req.body.word]
+        })
+
+        await newResultLesson.save()
+      }
+
+      return res.status(200).json({
+        code: 200,
+        message: 'Save result'
+      })
+    } catch (error) {
+      Logger.log('error create lesson', error);
+      return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
   }
+
   create(createResultDto: CreateResultDto) {
     return 'This action adds a new result';
   }

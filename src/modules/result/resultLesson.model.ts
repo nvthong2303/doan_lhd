@@ -2,16 +2,16 @@
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 export const resultLessonSchema = new mongoose.Schema({
-  lesson: { type: String, required: true },
+  lessonId: { type: String, required: true },
   user: { type: String, required: true },
-  listExerciseDone: [{ type: String, required: true }],
+  listExerciseDone: { type: Array, default: [] },
 }, {
   timestamps: true
 });
 
 export interface ResultLesson extends Document {
   _id: string;
-  lesson: string;
+  lessonId: string;
   user: string;
   listExerciseDone: string[];
 }

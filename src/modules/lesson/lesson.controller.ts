@@ -19,10 +19,10 @@ import { VERSION } from '../../config/config';
 
 @Controller(`${VERSION}/lesson`)
 export class LessonController {
-  constructor(private readonly lessonService: LessonService) {}
+  constructor(private readonly lessonService: LessonService) { }
 
   // route      POST /api/v1/lesson/create
-  // desc       create new lesson
+  // desc       tạo mới bài học
   // return     message
   // token      required true
   @Post(`create`)
@@ -31,16 +31,16 @@ export class LessonController {
   }
 
   // route      POST /api/v1/lesson/addExercise
-  // desc       add exercise (word) to lesson
+  // desc       thêm bài tập vào bài học
   // return     message
   // token      required true
-  @Put(`exercise`)
+  @Post(`exercise`)
   addWordToLesson(@Req() req, @Res() res) {
     return this.lessonService.addWordToLesson(req, res);
   }
 
   // route      POST /api/v1/lesson/listAuth
-  // desc       get list lesson with result
+  // desc       danh sách bài học theo email
   // return     list lesson + result of exercise
   // token      required true
   @Get('listAuth')
@@ -48,8 +48,26 @@ export class LessonController {
     return this.lessonService.getListLessonAuth(req, res);
   }
 
+  // route      POST /api/v1/lesson/detail
+  // desc       chi tiết bài học theo id
+  // return     list lesson + result of exercise
+  // token      required false
+  @Get('detail/:id')
+  getDetailLesson(@Req() req, @Res() res, @Param('id') lessonId) {
+    return this.lessonService.getDetailLesson(req, res, lessonId);
+  }
+
+  // route      POST /api/v1/lesson/listUnAuth
+  // desc       danh sách bài học không theo email
+  // return     list lesson + result of exercise
+  // token      required true
+  @Get('listOtherAuth')
+  getListUnAuthLesson(@Req() req, @Res() res) {
+    return this.lessonService.getListLessonUnAuth(req, res);
+  }
+
   // route      POST /api/v1/lesson/list
-  // desc       get list lesson
+  // desc       danh sách bài học mặc định
   // return     list lesson
   // token      required false
   @Get('list')
@@ -57,11 +75,20 @@ export class LessonController {
     return this.lessonService.getListLesson(req, res);
   }
 
-  // route      POST /api/v1/lesson/list
-  // desc       get list lesson
+  // route      POST /api/v1/lesson/searchAuth
+  // desc       tìm kiếm bài học không theo email
   // return     list lesson
   // token      required false
-  @Get('search')
+  // @Post('searchAuthOtherLesson')
+  // searchListAuthOtherLesson(@Req() req, @Res() res) {
+  //   return this.lessonService.searchListAuthOtherLesson(req, res);
+  // }
+
+  // route      POST /api/v1/lesson/list
+  // desc       tìm kiếm bài học mặc định
+  // return     list lesson
+  // token      required false
+  @Post('search')
   searchListLesson(@Req() req, @Res() res) {
     return this.lessonService.searchListLesson(req, res);
   }

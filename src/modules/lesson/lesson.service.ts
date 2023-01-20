@@ -6,10 +6,15 @@ import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Lesson } from './lesson.model';
+import { User } from "../users/user.model";
+import { ResultLesson } from "../result/resultLesson.model";
 
 @Injectable()
 export class LessonService {
-  constructor(@InjectModel('Lesson') private lessonModel: Model<Lesson>) { }
+  constructor(
+    @InjectModel('Lesson') private lessonModel: Model<Lesson>,
+    @InjectModel('User') private userModel: Model<User>,
+    @InjectModel('ResultLesson') private resultLessonModel: Model<ResultLesson>) { }
 
   async createNewLesson(req, res) {
     try {
@@ -23,17 +28,24 @@ export class LessonService {
       } else {
         const countLesson = await this.lessonModel.count();
         const newLesson = new this.lessonModel({
-          title: req.body.title ?? `Lesson ${countLesson + 1}`,
+          title: req.body.title ?? `lesson ${countLesson + 1}`,
           description: req.body.description,
-          author: req.body.author,
-          exercise: []
+          author: req.body.user.email,
+          exercise: req.body.exercise
         });
-        console.log(newLesson)
+
+        await this.userModel.findOneAndUpdate({
+          email: req.body.user.email
+        }, {
+          '$push': {
+            "listLesson": newLesson._id.toString()
+          }
+        })
 
         await newLesson.save();
 
-        return res.status(201).json({
-          code: 201,
+        return res.status(200).json({
+          code: 200,
           message: 'Create success',
         });
       }
@@ -49,29 +61,25 @@ export class LessonService {
   async addWordToLesson(req, res) {
     try {
       // handle
-      const lesson = await this.lessonModel.findOne({ title: req.body.title }).clone()
+      console.log(req.body)
+      const lesson = await this.lessonModel.findById(req.body.lessonId).clone()
 
       if (!lesson) {
         return res.status(409).json({
           code: 409,
           message: 'Lesson not found',
         });
-      } else if (lesson.exercise.includes(req.body.exerciseId)) {
-        return res.status(409).json({
-          code: 409,
-          message: 'Exercise exists',
-        });
       } else {
-        const UpdatedLesson = await this.lessonModel.findOneAndUpdate({ title: req.body.title }, {
+        await this.lessonModel.findByIdAndUpdate(req.body.lessonId, {
           "$push": {
-            "exercise": req.body.exerciseId
+            "exercise": { '$each': req.body.words }
           }
         })
       }
 
-      return res.status(201).json({
-        code: 201,
-        message: 'Add new exercise success',
+      return res.status(200).json({
+        code: 200,
+        message: 'Add exercises success',
       });
     } catch (error) {
       Logger.log('error create lesson', error);
@@ -84,17 +92,52 @@ export class LessonService {
 
   async getListLessonAuth(req, res) {
     try {
+      const user = await this.userModel.findOne({ email: req.body.user.email })
+
+      if (user) {
+        const listLessonRes = await Promise.all(user.listLesson.map(async el => {
+          const lesson = await this.lessonModel.findById(el)
+          const result = await this.resultLessonModel.findOne({
+            lessonId: el,
+            user: req.body.user.email
+          })
+          return {
+            ...JSON.parse(JSON.stringify(lesson)),
+            done: result ? result.listExerciseDone.length : 0
+          }
+        }))
+
+        return res.status(200).json({
+          code: 200,
+          data: listLessonRes,
+          message: 'Get list success',
+        });
+      } else {
+        return res.status(409).json({
+          code: 400,
+          message: 'Bad request',
+        });
+      }
+    } catch (error) {
+      Logger.log('error get list lesson auth :', error);
+      return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
+  async getListLessonUnAuth(req, res) {
+    try {
       const listLesson = await this.lessonModel
-        .find({ author: req.body.user.email })
+        .find({ author: { '$ne': req.body.user.email } })
         .sort('createdAt')
         .skip(req.body.skip ?? 0)
         .limit(req.body.limit ?? 20)
         .exec();
 
-      console.log(listLesson);
-
       return res.status(200).json({
-        code: 201,
+        code: 200,
         data: listLesson,
         message: 'Get list success',
       });
@@ -117,7 +160,7 @@ export class LessonService {
         .exec();
 
       return res.status(200).json({
-        code: 201,
+        code: 200,
         data: listLesson,
         message: 'Get list success',
       });
@@ -134,7 +177,8 @@ export class LessonService {
     try {
       if (req.body.keyword) {
         const listLesson = await this.lessonModel
-          .find({'$or':
+          .find({
+            '$or':
               [
                 {
                   title: { $regex: req.body.keyword }
@@ -168,6 +212,70 @@ export class LessonService {
       });
     }
   }
+
+  async getDetailLesson(req, res, lessonId) {
+    try {
+      const lesson = await this.lessonModel.findById(lessonId)
+
+      if (lesson) {
+        console.log(lesson);
+
+        return res.status(200).json({
+          code: 200,
+          data: lesson,
+          message: 'Get detail lesson success',
+        });
+      }
+    } catch (error) {
+      Logger.log('error get detail lesson', error);
+      return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
+  // async searchListAuthOtherLesson(req, res) {
+  //   try {
+  //     if (req.body.keyword) {
+  //       const listLesson = await this.lessonModel
+  //         .find({
+  //           '$or':
+  //             [
+  //               {
+  //                 title: { $regex: req.body.keyword }
+  //               },
+  //               {
+  //                 description: { $regex: req.body.keyword }
+  //               },
+  //             ],
+  //           '$ne': req.body.user.email
+  //         })
+  //         .sort('createdAt')
+  //         .skip(req.body.skip ?? 0)
+  //         .limit(req.body.limit ?? 20)
+  //         .exec();
+
+  //       return res.status(200).json({
+  //         code: 200,
+  //         data: listLesson,
+  //         message: 'Get list success',
+  //       });
+  //     } else {
+  //       return res.status(400).json({
+  //         code: 400,
+  //         message: 'Bad request',
+  //       });
+  //     }
+  //   } catch (error) {
+  //     Logger.log('error create lesson', error);
+  //     return res.status(409).json({
+  //       code: 400,
+  //       message: 'Bad request',
+  //     });
+  //   }
+  // }
+
   create(createLessonDto: CreateLessonDto) {
     return 'This action adds a new lesson';
   }

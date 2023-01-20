@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -20,6 +20,27 @@ export class WordService {
       code: 200,
       data: listWord,
     })
+  }
+
+  async getDetailWord(req, res, id) {
+    try {
+      // id là word cần lấy
+      const word = await this.WordModel.findOne({ word: id })
+
+      if (word) {
+        return res.status(200).json({
+          code: 200,
+          data: word,
+          message: 'Get detail word success',
+        });
+      }
+    } catch (error) {
+      Logger.log('error get detail lesson', error);
+      return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
   }
 
   // not use
