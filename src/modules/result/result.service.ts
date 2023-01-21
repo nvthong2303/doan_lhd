@@ -6,12 +6,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ResultExercise } from './resultExercise.model';
 import { ResultLesson } from './resultLesson.model';
+import { Word } from '../word/word.model';
+import { User } from '../users/user.model';
 
 @Injectable()
 export class ResultService {
   constructor(
     @InjectModel('ResultExercise') private resultExerciseModel: Model<ResultExercise>,
     @InjectModel('ResultLesson') private resultLessonModel: Model<ResultLesson>,
+    @InjectModel('User') private userModel: Model<User>,
   ) { }
 
   async saveResult(req, res) {
@@ -73,6 +76,30 @@ export class ResultService {
     } catch (error) {
       Logger.log('error create lesson', error);
       return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
+  async getResult(req, res) {
+    try {
+      // handle
+      console.log(req.body)
+      const result = await this.resultExerciseModel.findOne({
+        lessonId: req.body.lessonId,
+        word: req.body.word,
+        user: req.body.user.email
+      })
+
+      return res.status(200).json({
+        code: 200,
+        data: result,
+        message: 'Get result success',
+      });
+    } catch (error) {
+      Logger.log('error message', error);
+      return res.status(400).json({
         code: 400,
         message: 'Bad request',
       });

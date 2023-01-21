@@ -54,6 +54,19 @@ export class WordService {
     }
   }
 
+  async searchWord(req, res) {
+    const _word = await this.WordModel.findOne({
+      word: req.body.word
+    })
+    return res.status(200).json({
+      code: 200,
+      data: {
+        ipa: _word.ipa ?? 'n æ ɹ oʊ z',
+      },
+      message: 'Validate success',
+    });
+  }
+
   // not use
   createWord(file, req, res, filename) {
     return 'This action adds a new Word';

@@ -8,13 +8,15 @@ import { Model } from 'mongoose';
 import { Lesson } from './lesson.model';
 import { User } from "../users/user.model";
 import { ResultLesson } from "../result/resultLesson.model";
+import { Word } from "../Word/word.model";
 
 @Injectable()
 export class LessonService {
   constructor(
     @InjectModel('Lesson') private lessonModel: Model<Lesson>,
     @InjectModel('User') private userModel: Model<User>,
-    @InjectModel('ResultLesson') private resultLessonModel: Model<ResultLesson>) { }
+    @InjectModel('ResultLesson') private resultLessonModel: Model<ResultLesson>,
+  ) { }
 
   async createNewLesson(req, res) {
     try {

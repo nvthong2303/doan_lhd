@@ -13,5 +13,6 @@ import { MulterModule } from "@nestjs/platform-express";
   ],
   controllers: [WordController],
   providers: [WordService],
+  exports: [WordService]
 })
 export class WordModule { }

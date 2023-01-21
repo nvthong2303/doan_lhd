@@ -18,12 +18,13 @@ import { UpdateResultDto } from './dto/update-result.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { VERSION } from 'src/config/config';
+import { WordService } from './../word/word.service';
 
 const path = require('path');
 
 @Controller(`${VERSION}/result`)
 export class ResultController {
-  constructor(private readonly resultService: ResultService) { }
+  constructor(private readonly resultService: ResultService, private readonly wordService: WordService) { }
 
   // route      POST /api/v1/result/saveResult
   // desc       save result
@@ -34,10 +35,19 @@ export class ResultController {
     return this.resultService.saveResult(req, res);
   }
 
-  // route      POST /api/v1/result/test
-  // desc       create new word
-  // return     message
+  // route      POST /api/v1/result/saveResult
+  // desc       get result
+  // return     result
   // token      required true
+  @Post('getResult')
+  getResult(@Req() req, @Res() res) {
+    return this.resultService.getResult(req, res);
+  }
+
+  // route      POST /api/v1/result/test
+  // desc       test save file
+  // return     message
+  // token      required false
   // not use
   @Post('test')
   @UseInterceptors(FileInterceptor('file', {
@@ -46,20 +56,12 @@ export class ResultController {
       filename: (req, file, callback) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
         const filename = `${path.parse(file.originalname).name}-${uniqueSuffix}${path.extname(file.originalname)}`;
-        console.log(path.parse(file.originalname).name);
         callback(null, filename)
       }
     })
   }))
-  abc(@Req() req, @Res() res) {
-    console.log(req.body)
-    return res.status(200).json({
-      code: 200,
-      data: {
-        ipa: 'n æ ɹ oʊ z',
-      },
-      message: 'success',
-    });
+  handleResult(@Req() req, @Res() res) {
+    return this.wordService.searchWord(req, res)
   }
 
   @Post()
