@@ -12,14 +12,25 @@ export class WordService {
 
   // req body: { word, skip, limit }
   async search(req, res) {
+    const word = await this.WordModel.findOne({
+      word: req.body.keyword
+    })
     const listWord = await this.WordModel.find({
       word: { $regex: req.body.keyword ?? '' }
     }).sort('createdAt').skip(req.body.skip ?? 0).limit(req.body.limit ?? 20).exec();
 
-    return res.status(200).json({
-      code: 200,
-      data: listWord,
-    })
+    if (word && listWord) {
+      const filterListWord = listWord.filter(el => el.word !== word.word)
+      return res.status(200).json({
+        code: 200,
+        data: [word, ...filterListWord],
+      })
+    } else {
+      return res.status(200).json({
+        code: 200,
+        data: listWord,
+      })
+    }
   }
 
   async getDetailWord(req, res, id) {
