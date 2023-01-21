@@ -40,15 +40,17 @@ async function main() {
         // File path.
         readXlsxFile('./data_final.xlsx').then(async (rows) => {
             rows.map(async (el, index) => {
-                const newWord = new WordModel({
-                    word: el[0],
-                    gp_audio_url: el[1],
-                    us_audio_url: el[2],
-                    ipa: el[3],
-                    meaning: el[4],
-                    index: index
-                })
-                await newWord.save()
+                if (el[0] && el[1] && el[2] && el[3] && el[4]) {
+                    const newWord = new WordModel({
+                        word: el[0],
+                        gp_audio_url: el[1],
+                        us_audio_url: el[2],
+                        ipa: el[3],
+                        meaning: el[4],
+                        index: index
+                    })
+                    await newWord.save()
+                }
             })
         })
 
