@@ -61,7 +61,6 @@ export class LessonService {
   async addWordToLesson(req, res) {
     try {
       // handle
-      console.log(req.body)
       const lesson = await this.lessonModel.findById(req.body.lessonId).clone()
 
       if (!lesson) {
@@ -218,8 +217,6 @@ export class LessonService {
       const lesson = await this.lessonModel.findById(lessonId)
 
       if (lesson) {
-        console.log(lesson);
-
         return res.status(200).json({
           code: 200,
           data: lesson,

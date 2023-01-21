@@ -45,6 +45,15 @@ export class UsersController {
     return this.usersService.getInfo(req, res);
   }
 
+  // route      POST /api/v1/users/addLesson
+  // desc       add lesson to user
+  // return     message
+  // token      required true
+  @Post(`addLesson`)
+  addLesson(@Req() req, @Res() res) {
+    return this.usersService.addLesson(req, res);
+  }
+
   @Get()
   findAll() {
     return this.usersService.findAll();

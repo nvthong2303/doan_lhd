@@ -111,6 +111,50 @@ export class UsersService {
     }
   }
 
+  async addLesson(req, res) {
+    try {
+      // handle
+      console.log(req.body)
+      const user = await this.userModel.findOne({
+        email: req.body.user.email
+      })
+      console.log(user)
+
+      if (user) {
+        if (!user.listLesson.includes(req.body.lessonId)) {
+          await this.userModel.findOneAndUpdate({
+            email: req.body.user.email
+          }, {
+            '$push': {
+              'listLesson': req.body.lessonId
+            }
+          })
+
+          return res.status(200).json({
+            code: 200,
+            message: 'Add success',
+          });
+        } else {
+          return res.status(400).json({
+            code: 400,
+            message: 'Lesson exists',
+          })
+        }
+      } else {
+        return res.status(400).json({
+          code: 400,
+          message: 'User Notfound',
+        })
+      }
+    } catch (error) {
+      Logger.log('error message', error);
+      return res.status(400).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
