@@ -209,8 +209,6 @@ export class UsersService {
       const user = await this.userModel.findOne({ email: req.body.user.email })
 
       if (user) {
-        console.log(user.password)
-        console.log(req.body.oldPassword)
         if (user.password !== req.body.oldPassword) {
           return res.status(202).json({
             code: 202,
