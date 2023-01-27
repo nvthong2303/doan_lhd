@@ -54,6 +54,24 @@ export class UsersController {
     return this.usersService.addLesson(req, res);
   }
 
+  // route      POST /api/v1/users/update
+  // desc       update info user
+  // return     message
+  // token      required true
+  @Post(`update`)
+  updateInfo(@Req() req, @Res() res) {
+    return this.usersService.updateInfo(req, res);
+  }
+
+  // route      POST /api/v1/users/updatePassword
+  // desc       update password
+  // return     message
+  // token      required true
+  @Post(`updatePassword`)
+  updatePassword(@Req() req, @Res() res) {
+    return this.usersService.updatePassWord(req, res);
+  }
+
   @Get()
   findAll() {
     return this.usersService.findAll();
