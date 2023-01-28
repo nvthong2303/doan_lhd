@@ -67,6 +67,30 @@ export class WordService {
     });
   }
 
+  async getListWord(req, res) {
+    try {
+      // id là word cần lấy
+      console.log(req.body)
+      const listWord = await this.WordModel.find({
+        word: {
+          '$in': req.body.list
+        }
+      })
+
+      return res.status(200).json({
+        code: 200,
+        data: listWord,
+        message: 'Get list word success',
+      });
+    } catch (error) {
+      Logger.log('error get list lesson', error);
+      return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
   // not use
   createWord(file, req, res, filename) {
     return 'This action adds a new Word';

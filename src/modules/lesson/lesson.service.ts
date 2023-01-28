@@ -102,15 +102,17 @@ export class LessonService {
             lessonId: el,
             user: req.body.user.email
           })
-          return {
-            ...JSON.parse(JSON.stringify(lesson)),
-            done: result ? result.listExerciseDone.length : 0
+          if (lesson) {
+            return {
+              ...JSON.parse(JSON.stringify(lesson)),
+              done: result ? result.listExerciseDone.length : 0
+            }
           }
         }))
 
         return res.status(200).json({
           code: 200,
-          data: listLessonRes,
+          data: listLessonRes.filter(el => el),
           message: 'Get list success',
         });
       } else {
@@ -228,6 +230,46 @@ export class LessonService {
     } catch (error) {
       Logger.log('error get detail lesson', error);
       return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
+  async updateLesson(req, res) {
+    try {
+      // handle
+      const _lesson = await this.lessonModel.findById(req.body.lessonId)
+
+      if (_lesson) {
+        if (_lesson.author === req.body.user.email) {
+          const lesson = await this.lessonModel.findByIdAndUpdate(req.body.lessonId, {
+            title: req.body.title,
+            description: req.body.description,
+            author: req.body.user.email,
+            exercise: req.body.exercise
+          })
+
+          return res.status(200).json({
+            code: 200,
+            data: lesson,
+            message: 'Update success',
+          });
+        } else {
+          return res.status(401).json({
+            code: 401,
+            message: 'Not permission',
+          })
+        }
+      } else {
+        return res.status(401).json({
+          code: 401,
+          message: 'Not found',
+        })
+      }
+    } catch (error) {
+      Logger.log('error message', error);
+      return res.status(400).json({
         code: 400,
         message: 'Bad request',
       });

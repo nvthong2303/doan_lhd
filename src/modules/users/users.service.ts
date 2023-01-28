@@ -163,6 +163,50 @@ export class UsersService {
     }
   }
 
+  async removeLesson(req, res) {
+    try {
+      // handle
+      console.log(req.body)
+      const user = await this.userModel.findOne({
+        email: req.body.user.email
+      })
+      console.log(user)
+
+      if (user) {
+        if (user.listLesson.includes(req.body.lessonId)) {
+          await this.userModel.findOneAndUpdate({
+            email: req.body.user.email
+          }, {
+            '$pull': {
+              'listLesson': req.body.lessonId
+            }
+          })
+
+          return res.status(200).json({
+            code: 200,
+            message: 'Remove success',
+          });
+        } else {
+          return res.status(400).json({
+            code: 400,
+            message: 'Lesson not exists',
+          })
+        }
+      } else {
+        return res.status(400).json({
+          code: 400,
+          message: 'User Notfound',
+        })
+      }
+    } catch (error) {
+      Logger.log('error message', error);
+      return res.status(400).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
   async updateInfo(req, res) {
     try {
       const user = await this.userModel.findOne({

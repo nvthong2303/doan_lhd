@@ -54,6 +54,15 @@ export class UsersController {
     return this.usersService.addLesson(req, res);
   }
 
+  // route      POST /api/v1/users/removeLesson
+  // desc       remove lesson to user
+  // return     message
+  // token      required true
+  @Post(`removeLesson`)
+  removeLesson(@Req() req, @Res() res) {
+    return this.usersService.removeLesson(req, res);
+  }
+
   // route      POST /api/v1/users/update
   // desc       update info user
   // return     message

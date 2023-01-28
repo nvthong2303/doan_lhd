@@ -75,6 +75,15 @@ export class LessonController {
     return this.lessonService.getListLesson(req, res);
   }
 
+  // route      POST /api/v1/lesson/update
+  // desc       danh sách bài học mặc định
+  // return     list lesson
+  // token      required false
+  @Post('update')
+  updateLesson(@Req() req, @Res() res) {
+    return this.lessonService.updateLesson(req, res);
+  }
+
   // route      POST /api/v1/lesson/searchAuth
   // desc       tìm kiếm bài học không theo email
   // return     list lesson

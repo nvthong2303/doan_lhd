@@ -62,8 +62,17 @@ export class WordController {
   // return     list lesson + result of exercise
   // token      required false
   @Get('detail/:word')
-  getDetailLesson(@Req() req, @Res() res, @Param('word') wordId) {
+  getDetailWord(@Req() req, @Res() res, @Param('word') wordId) {
     return this.WordService.getDetailWord(req, res, wordId);
+  }
+
+  // route      POST /api/v1/word/detail/:id
+  // desc       chi tiết từ theo id
+  // return     list lesson + result of exercise
+  // token      required false
+  @Post('list')
+  getListWord(@Req() req, @Res() res) {
+    return this.WordService.getListWord(req, res);
   }
 
   // route      GET /api/v1/word/file
