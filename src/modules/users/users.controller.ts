@@ -81,6 +81,15 @@ export class UsersController {
     return this.usersService.updatePassWord(req, res);
   }
 
+  // route      POST /api/v1/users/updatePassword
+  // desc       update password
+  // return     message
+  // token      required true
+  @Post(`forgetPassword`)
+  forgetPassword(@Req() req, @Res() res) {
+    return this.usersService.forgetPassWord(req, res);
+  }
+
   @Get()
   findAll() {
     return this.usersService.findAll();
