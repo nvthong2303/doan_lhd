@@ -102,6 +102,15 @@ export class LessonController {
     return this.lessonService.searchListLesson(req, res);
   }
 
+  // route      POST /api/v1/lesson/delete
+  // desc       Xóa bài học
+  // return     message
+  // token      required true
+  @Post('delete')
+  deleteLesson(@Req() req, @Res() res) {
+    return this.lessonService.deleteLesson(req, res);
+  }
+
   @Post()
   create(@Body() createLessonDto: CreateLessonDto) {
     return this.lessonService.create(createLessonDto);

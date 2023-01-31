@@ -276,6 +276,48 @@ export class LessonService {
     }
   }
 
+  async deleteLesson(req, res) {
+    try {
+      // handle
+
+      if (!req.body.lessonId) {
+        return res.status(400).json({
+          code: 400,
+          message: 'Bad request',
+        });
+      }
+
+      const lesson = await this.lessonModel.findById(req.body.lessonId)
+
+      if (!lesson) {
+        return res.status(201).json({
+          code: 201,
+          message: 'Not found',
+        });
+      }
+
+      if (lesson.author === req.body.user.email) {
+        await this.lessonModel.findByIdAndDelete(req.body.lessonId)
+
+        return res.status(200).json({
+          code: 200,
+          message: 'Delete success',
+        });
+      } else {
+        return res.status(201).json({
+          code: 201,
+          message: 'No Permission',
+        });
+      }
+    } catch (error) {
+      Logger.log('error message', error);
+      return res.status(400).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
   // async searchListAuthOtherLesson(req, res) {
   //   try {
   //     if (req.body.keyword) {

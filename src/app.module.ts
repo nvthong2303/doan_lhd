@@ -29,6 +29,7 @@ export class AppModule {
     consumer.apply(Middleware).forRoutes(
       { path: `/api/v1/lesson/listAuth`, method: RequestMethod.GET },
       { path: `/api/v1/lesson/create`, method: RequestMethod.POST },
+      { path: `/api/v1/lesson/delete`, method: RequestMethod.POST },
       { path: `/api/v1/lesson/update`, method: RequestMethod.POST },
       { path: `/api/v1/lesson/exercise`, method: RequestMethod.POST },
       { path: `/api/v1/lesson/listOtherAuth`, method: RequestMethod.GET },
