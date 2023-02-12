@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-const URL_MONGODB = 'mongodb://127.0.0.1:27017/doan';
+const URL_MONGODB = 'mongodb+srv://thong:thong@cluster0.xdrpmvx.mongodb.net/?retryWrites=true&w=majority';
 const VERSION = '/api/v1';
 const PORT = 3001;
 const KEY = 'doantotnghiep';
