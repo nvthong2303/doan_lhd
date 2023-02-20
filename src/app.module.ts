@@ -3,7 +3,7 @@ import { Module, MiddlewareConsumer, RequestMethod } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
-import { WordModule } from './modules/Word/Word.module';
+import { WordModule } from './modules/word/word.module';
 import { ResultModule } from './modules/result/result.module';
 import { Middleware } from './modules/auth/auth.middleware';
 import { URL_MONGODB } from './config/config';

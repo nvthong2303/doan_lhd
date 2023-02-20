@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { WordService } from './word.service';
 import { WordController } from './word.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { wordSchema } from './Word.model';
+import { wordSchema } from './word.model';
 import { MulterModule } from "@nestjs/platform-express";
 
 @Module({
