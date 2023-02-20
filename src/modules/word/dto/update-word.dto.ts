@@ -1,3 +1,3 @@
-import { CreateWordDto } from './create-Word.dto';
+import { CreateWordDto } from './create-word.dto';
 
 export class UpdateWordDto { }

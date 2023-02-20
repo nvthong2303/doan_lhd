@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 import { Lesson } from './lesson.model';
 import { User } from "../users/user.model";
 import { ResultLesson } from "../result/resultLesson.model";
-import { Word } from "../Word/word.model";
+import { Word } from "../word/word.model";
 
 @Injectable()
 export class LessonService {
