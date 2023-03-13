@@ -12,24 +12,34 @@ export class WordService {
 
   // req body: { word, skip, limit }
   async search(req, res) {
-    const word = await this.WordModel.findOne({
-      word: req.body.keyword
-    })
-    const listWord = await this.WordModel.find({
-      word: { $regex: req.body.keyword ?? '' }
-    }).sort('createdAt').skip(req.body.skip ?? 0).limit(req.body.limit ?? 20).exec();
+    try {
+      const word = await this.WordModel.findOne({
+        word: req.body.keyword,
+        author: req.body.dictionary ? { $exists: true } : undefined
+      })
+      const listWord = await this.WordModel.find({
+        word: { $regex: req.body.keyword ?? '' },
+        author: req.body.dictionary ? { $exists: true } : undefined
+      }).sort('createdAt').skip(req.body.skip ?? 0).limit(req.body.limit ?? 20).exec();
 
-    if (word && listWord) {
-      const filterListWord = listWord.filter(el => el.word !== word.word)
-      return res.status(200).json({
-        code: 200,
-        data: [word, ...filterListWord],
-      })
-    } else {
-      return res.status(200).json({
-        code: 200,
-        data: listWord,
-      })
+      if (word && listWord) {
+        const filterListWord = listWord.filter(el => el.word !== word.word)
+        return res.status(200).json({
+          code: 200,
+          data: [word, ...filterListWord],
+        })
+      } else {
+        return res.status(200).json({
+          code: 200,
+          data: listWord,
+        })
+      }
+    } catch (error) {
+      Logger.log('error get list word', error);
+      return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
     }
   }
 
@@ -83,7 +93,45 @@ export class WordService {
         message: 'Get list word success',
       });
     } catch (error) {
-      Logger.log('error get list lesson', error);
+      Logger.log('error get list word', error);
+      return res.status(409).json({
+        code: 400,
+        message: 'Bad request',
+      });
+    }
+  }
+
+  async createUncensoredWord(req, res) {
+    try {
+      const word = await this.WordModel.findOne({
+        word: req.body.word
+      })
+
+      if (word) {
+        Logger.log('create word failed. word already exist', req.body.word);
+        return res.status(301).json({
+          code: 301,
+          message: 'word already exist',
+        });
+      } else {
+        const newWord = new this.WordModel({
+          word: req.body.word,
+          meaning: req.body.meaning,
+          ipa: req.body.ipa,
+          author: req.body.user.email,
+          us_audio_url: req.body.link ?? '',
+          gp_audio_url: req.body.link ?? '',
+        })
+
+        await newWord.save()
+
+        return res.status(200).json({
+          code: 200,
+          message: 'create word success',
+        });
+      }
+    } catch (error) {
+      Logger.log('error create new word', error);
       return res.status(409).json({
         code: 400,
         message: 'Bad request',

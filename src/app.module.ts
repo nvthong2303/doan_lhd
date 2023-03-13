@@ -40,6 +40,7 @@ export class AppModule {
       { path: `/api/v1/users/removeLesson`, method: RequestMethod.POST },
       { path: `/api/v1/result/saveResult`, method: RequestMethod.POST },
       { path: `/api/v1/result/getResult`, method: RequestMethod.POST },
+      { path: `/api/v1/word/contribute`, method: RequestMethod.POST },
       // { path: `/user/login`, method: RequestMethod.POST },
     );
   }

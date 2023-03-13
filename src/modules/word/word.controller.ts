@@ -35,6 +35,11 @@ export class WordController {
     return this.WordService.search(req, res);
   }
 
+  @Post('contribute')
+  contribute(@Req() req, @Res() res) {
+    return this.WordService.createUncensoredWord(req, res);
+  }
+
   // route      POST /api/v1/word/create
   // desc       create new word
   // return     message

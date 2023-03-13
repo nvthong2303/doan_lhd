@@ -8,7 +8,8 @@ export const wordSchema = new mongoose.Schema({
     us_audio_url: { type: String, required: false },
     meaning: { type: String, required: false },
     ipa: { type: String, required: true },
-    index: { type: Number, required: true }
+    index: { type: Number, required: false },
+    author: { type: String, required: false },
 }, {
     timestamps: true
 });
@@ -20,5 +21,6 @@ export interface Word extends Document {
     us_audio_url: string;
     meaning: string;
     ipa: string;
-    index: number;
+    index?: number;
+    author?: string;
 }
